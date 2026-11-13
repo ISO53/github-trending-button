@@ -1,12 +1,13 @@
 {
 	"manifest_version": 3,
 	"name": "GitHub Trending Sidebar Button",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "Adds a Trending button next to Home and Feed in the GitHub dashboard sidebar.",
 	"content_scripts": [
 		{
 			"matches": [
-				"https://github.com/*"
+				"https://github.com/dashboard*",
+				"https://github.com/feed*"
 			],
 			"js": [
 				"content.js"

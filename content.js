@@ -1,10 +1,21 @@
 // Adds a "Trending" button next to Home and Feed in the GitHub dashboard sidebar.
-// Strategy: find the existing "Feed" item by its href, clone it (inherits GitHub's
-// own styling), retarget it to /trending, and insert it right after. Re-run via
-// MutationObserver because GitHub re-renders the sidebar on SPA navigation.
+// Runs only on /dashboard and /feed — the manifest restricts injection, but GitHub's
+// client-side routing keeps this script alive after navigating away, so the path is
+// re-checked on every run. Strategy: find the existing "Feed" item by its href,
+// clone it (inherits GitHub's own styling), retarget it to /trending, and insert it
+// right after. Re-run via MutationObserver because GitHub re-renders the sidebar
+// on SPA navigation.
 
 const GRAPH_ICON_PATH =
 	'M1.5 1.75V13.5h13.75a.75.75 0 0 1 0 1.5H.75a.75.75 0 0 1-.75-.75V1.75a.75.75 0 0 1 1.5 0Zm14.28 2.53-5.25 5.25a.75.75 0 0 1-1.06 0L7 7.06 4.28 9.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.25-3.25a.75.75 0 0 1 1.06 0L10 7.94l4.72-4.72a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z';
+
+// The only pages the button may appear on. A trailing slash is tolerated;
+// query strings don't affect pathname.
+const PAGE_PATHS = new Set(['/dashboard', '/feed']);
+
+function isTargetPage() {
+	return PAGE_PATHS.has(location.pathname.replace(/\/+$/, ''));
+}
 
 // The <a> we clone from: prefer Feed, fall back to Home.
 function findSourceLink() {
@@ -40,6 +51,8 @@ function clearActiveState(el) {
 }
 
 function addTrendingButton() {
+	if (!isTargetPage()) return;
+
 	const source = findSourceLink();
 	if (!source) return;
 
